@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart EV Charging Monitor</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#07111f;color:#f1f5f9;padding:20px}
+.container{max-width:950px;margin:auto}
+header{padding:22px 0;border-bottom:1px solid #263449;margin-bottom:25px}
+header h1{color:#38bdf8;font-size:27px}
+header p{color:#a8b7ca;margin-top:9px}
+.status{display:inline-block;background:#123c31;color:#6ee7b7;padding:7px 12px;border-radius:20px;margin-top:15px;font-size:13px}
+.notice{background:#18283b;padding:12px;border-radius:10px;color:#cbd5e1;font-size:13px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card{background:#111e30;border:1px solid #263449;padding:22px;border-radius:15px}
+.card p{color:#a8b7ca;font-size:14px}
+.value{font-size:32px;font-weight:bold;margin:17px 0;color:#38bdf8}
+.unit{font-size:15px;color:#cbd5e1}
+.section{margin:25px 0 14px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+button{border:0;border-radius:9px;padding:13px 20px;font-size:15px;font-weight:bold;cursor:pointer}
+.start{background:#22c55e;color:#052e16}
+.stop{background:#ef4444;color:white}
+#message{margin-top:15px;color:#cbd5e1}
+.bar{height:9px;background:#263449;border-radius:8px;overflow:hidden;margin-top:15px}
+#progress{height:100%;width:65%;background:#38bdf8;transition:width .5s}
+footer{text-align:center;color:#8293aa;margin-top:35px;font-size:13px;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+<h1>⚡ Smart EV Charging Monitor</h1>
+<p>Smart Energy Monitoring & Charging Dashboard</p>
+<span class="status" id="status">● Simulation Mode</span>
+</header>
+
+<div class="notice">
+Demo dashboard — values are simulated for project presentation.
+Live sensor readings require ESP32 and an INA219 sensor.
+</div>
+
+<div class="grid">
+<div class="card">
+<p>Voltage</p>
+<div class="value"><span id="voltage">12.4</span> <span class="unit">V</span></div>
+<p>Supply voltage</p>
+</div>
+<div class="card">
+<p>Current</p>
+<div class="value"><span id="current">1.25</span> <span class="unit">A</span></div>
+<p>Charging current</p>
+</div>
+<div class="card">
+<p>Power</p>
+<div class="value"><span id="power">15.50</span> <span class="unit">W</span></div>
+<p>Estimated power</p>
+</div>
+<div class="card">
+<p>Energy</p>
+<div class="value"><span id="energy">0.12</span> <span class="unit">Wh</span></div>
+<p>Demo energy reading</p>
+</div>
+</div>
+
+<h2 class="section">Charging Overview</h2>
+<div class="card">
+<p>Demo charging progress</p>
+<div class="value" id="percent">65%</div>
+<div class="bar"><div id="progress"></div></div>
+<div class="controls">
+<button class="start" onclick="startCharging()">▶ Start Demo</button>
+<button class="stop" onclick="stopCharging()">■ Stop Demo</button>
+</div>
+<p id="message">Demo is ready. Press Start Demo.</p>
+</div>
+
+<h2 class="section">Project Features</h2>
+<div class="grid">
+<div class="card">
+<p>📊 Energy Monitoring</p>
+<div class="unit">Voltage, current and power display</div>
+</div>
+<div class="card">
+<p>🌐 Web Dashboard</p>
+<div class="unit">Responsive mobile-friendly interface</div>
+</div>
+<div class="card">
+<p>🔌 IoT Integration</p>
+<div class="unit">Designed for ESP32 and INA219 sensor</div>
+</div>
+</div>
+
+<footer>
+<p>Smart EV Charging Monitor | Engineering Project</p>
+<p>Designed for educational low-voltage demonstration</p>
+</footer>
+</div>
+
+<script>
+let running=false;
+let energy=0.12;
+let timer=null;
+
+function updateDemo(){
+if(!running)return;
+let v=12+(Math.random()*0.8);
+let c=0.8+(Math.random()*0.7);
+let p=v*c;
+energy+=p/3600;
+
+document.getElementById("voltage").textContent=v.toFixed(2);
+document.getElementById("current").textContent=c.toFixed(2);
+document.getElementById("power").textContent=p.toFixed(2);
+document.getElementById("energy").textContent=energy.toFixed(3);
+
+let pct=Math.min(99,Math.round(65+energy%34));
+document.getElementById("percent").textContent=pct+"%";
+document.getElementById("progress").style.width=pct+"%";
+}
+
+function startCharging(){
+if(running)return;
+running=true;
+document.getElementById("status").textContent="● Demo Running";
+document.getElementById("status").style.color="#6ee7b7";
+document.getElementById("message").textContent="Simulation running — readings are not from a real charger.";
+updateDemo();
+timer=setInterval(updateDemo,2000);
+}
+
+function stopCharging(){
+running=false;
+clearInterval(timer);
+document.getElementById("status").textContent="● Demo Stopped";
+document.getElementById("status").style.color="#fca5a5";
+document.getElementById("message").textContent="Demo stopped.";
+}
+</script>
+</body>
+</html>
